@@ -3,6 +3,7 @@ import BookList from './components/BookList';
 import ApiKey from './components/ApiKey';
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
+import Index from './Index';
 function App() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -130,17 +131,16 @@ function App() {
 
   return (
     <>
-      <Header/>
-      {/* // TO-DO complete the UI */}
+      {/* <Header/>
       <ApiKey apiKey={apiKey} onApiKeyChange={setApiKey}/>
       <BookList 
         books={books} 
         onCreateImage={handleImage}
         onDelete={handleDelete}
         prompt={prompt} 
-      />
+      /> */}
+      <Index/>
     </>
   );
 }
-
 export default App;

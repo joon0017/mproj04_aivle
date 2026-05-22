@@ -1,56 +1,36 @@
 import './App.css';
-
-import { use, useState } from 'react';
-import { useEffect } from 'react';
+import BookList from './components/BookList';
+import ApiKey from './components/ApiKey';
+import { useEffect, useState } from 'react';
 import Header from './components/Header';
 function App() {
-
-  const [books, setPosts] = useState([
-    {
-      "id": 1,
-      "title": "데이터베이스 입문",
-      "author": "김철수, 이영희",
-      "content": "데이터베이스 기초 개념과 SQL 활용 방법을 설명하는 입문서",
-      "coverImageUrl": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": 2,
-      "title": "SQL 활용 가이드",
-      "author": "박지성",
-      "content": "실무 중심의 SQL 활용 예제를 다룬 가이드북",
-      "coverImageUrl": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": 3,
-      "title": "자료구조의 이해",
-      "author": "최민수",
-      "content": "자료구조와 알고리즘의 기본 원리를 설명하는 교재",
-      "coverImageUrl": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-  ]);
-  // const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [apiKey, setApiKey] = useState("");
+  const prompt = "책의 커버 이미지를 생성해줘";
 
   useEffect(() => {
-    //TO-DO
     async function loadBooks() {
-      //TO-DO complete loadPosts function
       try{
-        
+        const res = await fetch("http://localhost:3000/books");
+        if (!res.ok) {
+          throw new Error(`Failed to load books: ${res.status}`);
+        }
+        const data = await res.json();
+        setBooks(data);        
+        // console.log(data);
       }
       catch(err) {
         console.error(err);
         setError("게시글을 불러오지 못했어요");
       }
+      finally {
         setLoading(false);
+      }
     }
+    loadBooks();
+    // console.log(books);
 
   },[]);
   const handleAddBooks = async (newPost) => {
@@ -74,9 +54,63 @@ function App() {
   const handleImage = async(id) => {
     //TO-DO complete handleImage function
     try{
+      if (!apiKey.trim()) {
+        alert("API Key를 입력하세요.");
+        return;
+      }
+
+      const book = books.find((b) => b.id === id);
+      if (!book) {
+        throw new Error(`Book not found: ${id}`);
+      }
+
+      const imagePrompt = `${prompt}: title "${book.title}", author "${book.author}", description "${book.content}", style "2d 이미지"`;
+      const imageRes = await fetch("/openai/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-image-2",
+          prompt: imagePrompt,
+          size: "1024x1024",
+          quality: "medium",
+        }),
+      });
+
+      if (!imageRes.ok) {
+        const message = await imageRes.text();
+        throw new Error(`Failed to create image: ${imageRes.status} ${message}`);
+      }
+
+      const imageData = await imageRes.json();
+      const base64Image = imageData.data?.[0]?.b64_json;
+      if (!base64Image) {
+        throw new Error("No image data returned.");
+      }
+
+      const coverImageUrl = `data:image/png;base64,${base64Image}`;
+      const updateRes = await fetch(`http://localhost:3000/books/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ coverImageUrl }),
+      });
+
+      if (!updateRes.ok) {
+        throw new Error(`Failed to save image: ${updateRes.status}`);
+      }
+
+      const updatedBook = await updateRes.json();
+      setBooks((prevBooks) =>
+        prevBooks.map((book) => (book.id === id ? updatedBook : book))
+      );
 
     } catch (err){
       console.error(err);
+      alert("이미지 생성에 실패했습니다.");
     }
     
   };
@@ -98,6 +132,13 @@ function App() {
     <>
       <Header/>
       {/* // TO-DO complete the UI */}
+      <ApiKey apiKey={apiKey} onApiKeyChange={setApiKey}/>
+      <BookList 
+        books={books} 
+        onCreateImage={handleImage}
+        onDelete={handleDelete}
+        prompt={prompt} 
+      />
     </>
   );
 }

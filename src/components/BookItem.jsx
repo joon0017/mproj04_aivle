@@ -1,3 +1,4 @@
+import './../App.css';
 function BookItem({id, title, author, content, coverImageUrl, onDelete, onCreateImage,prompt}) {
     return <>
         <div className="cover">

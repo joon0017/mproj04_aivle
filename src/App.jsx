@@ -1,122 +1,105 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import './App.css';
 
+import { use, useState } from 'react';
+import { useEffect } from 'react';
+import Header from './components/Header';
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [books, setPosts] = useState([
+    {
+      "id": 1,
+      "title": "데이터베이스 입문",
+      "author": "김철수, 이영희",
+      "content": "데이터베이스 기초 개념과 SQL 활용 방법을 설명하는 입문서",
+      "coverImageUrl": "",
+      "createdAt": "",
+      "updatedAt": ""
+    },
+    {
+      "id": 2,
+      "title": "SQL 활용 가이드",
+      "author": "박지성",
+      "content": "실무 중심의 SQL 활용 예제를 다룬 가이드북",
+      "coverImageUrl": "",
+      "createdAt": "",
+      "updatedAt": ""
+    },
+    {
+      "id": 3,
+      "title": "자료구조의 이해",
+      "author": "최민수",
+      "content": "자료구조와 알고리즘의 기본 원리를 설명하는 교재",
+      "coverImageUrl": "",
+      "createdAt": "",
+      "updatedAt": ""
+    },
+  ]);
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    //TO-DO
+    async function loadBooks() {
+      //TO-DO complete loadPosts function
+      try{
+        
+      }
+      catch(err) {
+        console.error(err);
+        setError("게시글을 불러오지 못했어요");
+      }
+        setLoading(false);
+    }
+
+  },[]);
+  const handleAddBooks = async (newPost) => {
+    //TO-DO complete handleAddBooks function
+    try{
+    }
+    catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    //TO-DO complete handleDelete function
+    try{
+      
+    } catch (err){
+      console.error(err);
+    }
+  };
+
+  const handleImage = async(id) => {
+    //TO-DO complete handleImage function
+    try{
+
+    } catch (err){
+      console.error(err);
+    }
+    
+  };
+
+  if(loading){
+    return <>
+        <Header/>
+        <p>불러오는 중...</p>
+      </>
+  }
+  if(error){
+    return <>
+        <Header/>
+        <p>{error}</p>
+    </>
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <Header/>
+      // TO-DO complete the UI
     </>
-  )
+  );
 }
 
-export default App
+export default App;

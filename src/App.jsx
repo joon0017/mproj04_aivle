@@ -139,7 +139,7 @@ function App() {
         onDelete={handleDelete}
         prompt={prompt} 
       /> */}
-      <Index/>
+      <Index books={books}/>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import BookItem from './components/BookItem';
-function Index() {
+function Index({ books }) {
   return (
     <div className="page">
       <header className="header">
@@ -28,8 +28,16 @@ function Index() {
 
       <main className="content">
         <section className="book-list">
-          <BookItem />
-          <BookItem />
+          {books.map((book) => (
+            <BookItem
+              key={book.id}
+              id={book.id}
+              title={book.title}
+              author={book.author}
+              content={book.content}
+              coverImageUrl={book.coverImageUrl}
+            />
+          ))}
         </section>
 
         <aside className="side-box">

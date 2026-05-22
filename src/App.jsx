@@ -34,7 +34,7 @@ function App() {
       "updatedAt": ""
     },
   ]);
-  const [books, setBooks] = useState([]);
+  // const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -97,7 +97,7 @@ function App() {
   return (
     <>
       <Header/>
-      // TO-DO complete the UI
+      {/* // TO-DO complete the UI */}
     </>
   );
 }

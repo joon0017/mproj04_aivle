@@ -1,25 +1,42 @@
-import './../App.css';
+import "./BookItem.css";
 
-function BookItem({ title, author, content, coverImageUrl }) {
-    const imageSrc = coverImageUrl || "https://via.placeholder.com/170x260?text=No+Image";
+function BookItem({ book, index }) {
+  return (
+    <article className="book-item">
+      <div className="book-rank">{index + 1}</div>
 
-    return (
-        <article className="book-item">
-            <div className="cover">
-                <img src={imageSrc} alt={title} />
-            </div>
+      <div className="book-cover">
+        <img src={book.cover} alt={book.title} />
+      </div>
 
-            <div className="book-info">
-                <h2>{title}</h2>
-                <div className="line"></div>
+      <div className="book-content">
+        <div className="book-title-row">
+          <h2>{book.title}</h2>
+          <span className="book-type">{book.category}</span>
+        </div>
 
-                <div className="desc">
-                    <p>{content}</p>
-                    <button className="detail-btn">상세정보</button>
-                </div>
-            </div>
-        </article>
-    );
+        <div className="book-meta">
+          <span>{book.author} 지음</span>
+          <span>|</span>
+          <span>{book.publisher}</span>
+          <span>|</span>
+          <span>{book.year}</span>
+        </div>
+
+        <p className="book-description">{book.description}</p>
+
+        <div className="book-tags">
+          {book.tags?.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+      </div>
+
+      <button className="book-detail-btn">
+        소장정보
+      </button>
+    </article>
+  );
 }
 
 export default BookItem;

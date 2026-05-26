@@ -1,6 +1,14 @@
 import ShelfBookItem from "./ShelfBookItem";
 
-function ShelfSection({ title, books, selectedBook, onBookClick }) {
+function ShelfSection({
+  title,
+  books,
+  selectedBook,
+  onBookClick,
+  onBookDoubleClick,
+  onBookHover,
+  onBookLeave,
+}) {
   return (
     <div className="shelf-section">
       <div className="shelf-header">
@@ -15,6 +23,9 @@ function ShelfSection({ title, books, selectedBook, onBookClick }) {
             book={book}
             isSelected={selectedBook?.id === book.id}
             onClick={() => onBookClick(book)}
+            onDoubleClick={() => onBookDoubleClick(book)}
+            onMouseEnter={() => onBookHover(book)}
+            onMouseLeave={onBookLeave}
           />
         ))}
       </div>

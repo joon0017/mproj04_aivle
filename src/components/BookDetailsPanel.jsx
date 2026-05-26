@@ -1,4 +1,9 @@
-function BookDetailsPanel({ selectedBook, onEditClick, onDeleteBook }) {
+function BookDetailsPanel({
+  selectedBook,
+  isPreviewing = false,
+  onEditClick,
+  onDeleteBook,
+}) {
   if (!selectedBook) {
     return <div className="no-select">도서를 선택하면 상세 정보가 표시됩니다.</div>;
   }
@@ -8,20 +13,25 @@ function BookDetailsPanel({ selectedBook, onEditClick, onDeleteBook }) {
   return (
     <div className="sticky-panel">
       <div className="panel-header">
-        <h3 className="section-title-right">상세 정보 및 관리</h3>
-
-        <div className="action-btn-group">
-          <button onClick={onEditClick} className="edit-btn">
-            수정
-          </button>
-
-          <button
-            onClick={() => onDeleteBook(selectedBook.id)}
-            className="delete-btn"
-          >
-            삭제
-          </button>
+        <div>
+          <h3 className="section-title-right">상세 정보 및 관리</h3>
+          {/* {isPreviewing && <p className="preview-label">마우스 허버 미리보기</p>} */}
         </div>
+
+        {!isPreviewing && (
+          <div className="action-btn-group">
+            <button onClick={onEditClick} className="edit-btn">
+              수정
+            </button>
+
+            <button
+              onClick={() => onDeleteBook(selectedBook.id)}
+              className="delete-btn"
+            >
+              삭제
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="detail-card">

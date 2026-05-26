@@ -279,6 +279,15 @@ function App() {
   };
 
   const openBookModal = (book) => {
+    if (selectedBook?.id === book.id) {
+      setModalBook(book);
+      return;
+    }
+
+    setSelectedBook(book);
+  };
+
+  const openBookModalByDoubleClick = (book) => {
     setSelectedBook(book);
     setModalBook(book);
   };
@@ -298,6 +307,7 @@ function App() {
           onEditClick={handleEditClick}
           onDeleteBook={handleDeleteBook}
           onBookClick={openBookModal}
+          onBookDoubleClick={openBookModalByDoubleClick}
         />
       )}
 

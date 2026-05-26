@@ -1,3 +1,4 @@
+import { useState } from "react";
 import BookDetailsPanel from "../components/BookDetailsPanel";
 import ShelfSection from "../components/ShelfSection";
 
@@ -13,7 +14,14 @@ function MainPage({
   onEditClick,
   onDeleteBook,
   onBookClick,
+  onBookDoubleClick,
 }) {
+  const [hoveredBook, setHoveredBook] = useState(null);
+  const displayBook = hoveredBook || selectedBook;
+  const isPreviewing = Boolean(
+    hoveredBook && hoveredBook.id !== selectedBook?.id
+  );
+
   return (
     <div className="main-wrapper">
       <aside className="sidebar">
@@ -85,6 +93,9 @@ function MainPage({
               books={holdingBooks}
               selectedBook={selectedBook}
               onBookClick={onBookClick}
+              onBookDoubleClick={onBookDoubleClick}
+              onBookHover={setHoveredBook}
+              onBookLeave={() => setHoveredBook(null)}
             />
 
             <ShelfSection
@@ -92,6 +103,9 @@ function MainPage({
               books={availableBooks.slice(0, 6)}
               selectedBook={selectedBook}
               onBookClick={onBookClick}
+              onBookDoubleClick={onBookDoubleClick}
+              onBookHover={setHoveredBook}
+              onBookLeave={() => setHoveredBook(null)}
             />
 
             <ShelfSection
@@ -99,6 +113,9 @@ function MainPage({
               books={rentedBooks.slice(0, 6)}
               selectedBook={selectedBook}
               onBookClick={onBookClick}
+              onBookDoubleClick={onBookDoubleClick}
+              onBookHover={setHoveredBook}
+              onBookLeave={() => setHoveredBook(null)}
             />
           </div>
         )}
@@ -106,7 +123,8 @@ function MainPage({
 
       <aside className="right-side-panel">
         <BookDetailsPanel
-          selectedBook={selectedBook}
+          selectedBook={displayBook}
+          isPreviewing={isPreviewing}
           onEditClick={onEditClick}
           onDeleteBook={onDeleteBook}
         />

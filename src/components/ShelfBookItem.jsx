@@ -7,7 +7,14 @@ const coverBgColors = [
   "#f4a261",
 ];
 
-function ShelfBookItem({ book, isSelected, onClick }) {
+function ShelfBookItem({
+  book,
+  isSelected,
+  onClick,
+  onDoubleClick,
+  onMouseEnter,
+  onMouseLeave,
+}) {
   const selectBg = coverBgColors[book.id % coverBgColors.length];
 
   return (
@@ -15,6 +22,11 @@ function ShelfBookItem({ book, isSelected, onClick }) {
       type="button"
       className={`book-shelf-card ${isSelected ? "selected-book-shelf-card" : ""}`}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onFocus={onMouseEnter}
+      onBlur={onMouseLeave}
       aria-label={`${book.title} 상세보기`}
     >
       {book.coverUrl ? (

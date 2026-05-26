@@ -1,146 +1,141 @@
-import './App.css';
-import BookList from './components/BookList';
-import ApiKey from './components/ApiKey';
-import { useEffect, useState } from 'react';
-import Header from './components/Header';
-import Index from './Index';
+import { useEffect, useState } from "react";
+import "./App.css";
+import Header from "./components/Header";
+import SearchArea from "./components/SearchArea";
+import SlideBox from "./components/SlideBox";
+import BookItem from "./components/BookItem";
+
 function App() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [apiKey, setApiKey] = useState("");
-  const prompt = "책의 커버 이미지를 생성해줘";
+  const [sortType, setSortType] = useState("title");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const booksPerPage = 3;
 
   useEffect(() => {
     async function loadBooks() {
-      try{
+      try {
         const res = await fetch("http://localhost:3000/books");
+
         if (!res.ok) {
           throw new Error(`Failed to load books: ${res.status}`);
         }
+
         const data = await res.json();
-        setBooks(data);        
-        // console.log(data);
-      }
-      catch(err) {
+        setBooks(data);
+      } catch (err) {
         console.error(err);
-        setError("게시글을 불러오지 못했어요");
-      }
-      finally {
+        setError("Failed to load books.");
+      } finally {
         setLoading(false);
       }
     }
+
     loadBooks();
-    // console.log(books);
+  }, []);
 
-  },[]);
-  const handleAddBooks = async (newPost) => {
-    //TO-DO complete handleAddBooks function
-    try{
+  const sortedBooks = [...books].sort((a, b) => {
+    if (sortType === "title") {
+      return (a.title || "").localeCompare(b.title || "", "ko");
     }
-    catch (err) {
-      console.error(err);
+
+    if (sortType === "author") {
+      return (a.author || "").localeCompare(b.author || "", "ko");
     }
+
+    if (sortType === "createdAt") {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    }
+
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sortedBooks.length / booksPerPage);
+  const startIndex = (currentPage - 1) * booksPerPage;
+  const currentBooks = sortedBooks.slice(startIndex, startIndex + booksPerPage);
+
+  const handlePrevPage = () => {
+    if (currentPage === 1) return;
+    setCurrentPage((page) => page - 1);
   };
 
-  const handleDelete = async (id) => {
-    //TO-DO complete handleDelete function
-    try{
-      
-    } catch (err){
-      console.error(err);
-    }
+  const handleNextPage = () => {
+    if (currentPage === totalPages) return;
+    setCurrentPage((page) => page + 1);
   };
-
-  const handleImage = async(id) => {
-    //TO-DO complete handleImage function
-    try{
-      if (!apiKey.trim()) {
-        alert("API Key를 입력하세요.");
-        return;
-      }
-
-      const book = books.find((b) => b.id === id);
-      if (!book) {
-        throw new Error(`Book not found: ${id}`);
-      }
-
-      const imagePrompt = `${prompt}: title "${book.title}", author "${book.author}", description "${book.content}", style "2d 이미지"`;
-      const imageRes = await fetch("/openai/v1/images/generations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey.trim()}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-image-2",
-          prompt: imagePrompt,
-          size: "1024x1024",
-          quality: "medium",
-        }),
-      });
-
-      if (!imageRes.ok) {
-        const message = await imageRes.text();
-        throw new Error(`Failed to create image: ${imageRes.status} ${message}`);
-      }
-
-      const imageData = await imageRes.json();
-      const base64Image = imageData.data?.[0]?.b64_json;
-      if (!base64Image) {
-        throw new Error("No image data returned.");
-      }
-
-      const coverImageUrl = `data:image/png;base64,${base64Image}`;
-      const updateRes = await fetch(`http://localhost:3000/books/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ coverImageUrl }),
-      });
-
-      if (!updateRes.ok) {
-        throw new Error(`Failed to save image: ${updateRes.status}`);
-      }
-
-      const updatedBook = await updateRes.json();
-      setBooks((prevBooks) =>
-        prevBooks.map((book) => (book.id === id ? updatedBook : book))
-      );
-
-    } catch (err){
-      console.error(err);
-      alert("이미지 생성에 실패했습니다.");
-    }
-    
-  };
-
-  if(loading){
-    return <>
-        <Header/>
-        <p>불러오는 중...</p>
-      </>
-  }
-  if(error){
-    return <>
-        <Header/>
-        <p>{error}</p>
-    </>
-  }
 
   return (
-    <>
-      {/* <Header/>
-      <ApiKey apiKey={apiKey} onApiKeyChange={setApiKey}/>
-      <BookList 
-        books={books} 
-        onCreateImage={handleImage}
-        onDelete={handleDelete}
-        prompt={prompt} 
-      /> */}
-      <Index books={books}/>
-    </>
+    <div>
+      <Header />
+
+      <div className="page">
+        <main className="content">
+          <div className="left-content">
+            <SearchArea />
+
+            {loading && <p className="status-message">Loading books...</p>}
+            {error && <p className="status-message">{error}</p>}
+
+            {!loading && !error && (
+              <>
+                <section className="book-list">
+                  {currentBooks.map((book, index) => (
+                    <BookItem
+                      key={book.id}
+                      book={book}
+                      index={startIndex + index}
+                    />
+                  ))}
+                </section>
+
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      className="page-arrow"
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                    >
+                      {"<"}
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, index) => (
+                      <button
+                        key={index + 1}
+                        className={
+                          currentPage === index + 1
+                            ? "page-number active"
+                            : "page-number"
+                        }
+                        onClick={() => setCurrentPage(index + 1)}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      className="page-arrow"
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      {">"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <SlideBox
+            books={books}
+            sortType={sortType}
+            setSortType={setSortType}
+          />
+        </main>
+      </div>
+    </div>
   );
 }
+
 export default App;

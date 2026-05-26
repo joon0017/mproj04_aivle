@@ -1,23 +1,16 @@
 import BookItem from "./BookItem";
 
-function BookList({books, onCreateImage, onDelete}) {
+function BookList({books}) {
     return <>
-        <ul>
-            {books.map(b => (
+        <section className="book-list">
+            {books.map((b, index) => (
                 <BookItem
                     key={b.id}
-                    id={b.id}
-                    title={b.title}
-                    author={b.author}
-                    content={b.content}
-                    coverImageUrl={b.coverImageUrl==="" ?
-                         "https://via.placeholder.com/150" :
-                          b.coverImageUrl}
-                    onDelete={onDelete}
-                    onCreateImage={onCreateImage}
+                    book={b}
+                    index={index}
                 />
             ))}
-        </ul>
+        </section>
     </>
 }
 

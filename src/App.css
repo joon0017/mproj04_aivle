@@ -539,6 +539,29 @@ button {
   margin-top: auto;
 }
 
+.ai-api-key-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.ai-api-key-field label {
+  color: #495057;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-api-key-field input {
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 10px 14px;
+  outline: 0;
+  background-color: #fff;
+  font-size: 14px;
+}
+
 .ai-generate-btn,
 .ai-regenerate-btn {
   border: 0;

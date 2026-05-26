@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function BookFormPage({
   mode,
   formData,
@@ -9,6 +11,16 @@ function BookFormPage({
   onCancel,
 }) {
   const isEditMode = mode === "edit";
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+
+  const handleImageButtonClick = () => {
+    if (!showApiKeyInput) {
+      setShowApiKeyInput(true);
+      return;
+    }
+
+    onGenerateImage();
+  };
 
   return (
     <div className="page-modifier">
@@ -43,27 +55,39 @@ function BookFormPage({
             )}
           </div>
 
-          {!isEditMode && (
-            <div className="ai-action-row">
-              {!generatedImage ? (
-                <button
-                  type="button"
-                  onClick={onGenerateImage}
-                  className="ai-generate-btn"
-                >
-                  🎨 AI 이미지 미리보기
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={onGenerateImage}
-                  className="ai-regenerate-btn"
-                >
-                  🔄 이미지 재생성
-                </button>
-              )}
-            </div>
-          )}
+          <div className="ai-action-row">
+            {showApiKeyInput && (
+              <div className="ai-api-key-field">
+                <label>OpenAPI Key</label>
+                <input
+                  type="password"
+                  name="openApiKey"
+                  value={formData.openApiKey || ""}
+                  onChange={onInputChange}
+                  placeholder="OpenAPI 키를 입력하세요"
+                  autoFocus
+                />
+              </div>
+            )}
+
+            {!generatedImage ? (
+              <button
+                type="button"
+                onClick={handleImageButtonClick}
+                className="ai-generate-btn"
+              >
+                🎨 AI 이미지 미리보기
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleImageButtonClick}
+                className="ai-regenerate-btn"
+              >
+                🔄 이미지 재생성
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="form-side">
@@ -78,19 +102,6 @@ function BookFormPage({
           </div>
 
           <form onSubmit={onSubmit} className="form-body">
-            {!isEditMode && (
-              <div className="form-group">
-                <label>OpenAPI Key</label>
-                <input
-                  type="password"
-                  name="openApiKey"
-                  value={formData.openApiKey || ""}
-                  onChange={onInputChange}
-                  placeholder="OpenAPI 키를 입력하세요"
-                />
-              </div>
-            )}
-
             <div className="form-group">
               <label>도서 제목 *</label>
               <input

@@ -34,7 +34,10 @@
       "content": "자료구조와 알고리즘의 기본 원리를 설명하는 교재",
       "coverImageUrl": "",
       "createdAt": "2024-01-12",
-      "updatedAt": "2024-01-12"
+      "updatedAt": "2024-01-12",
+      "isbn": "123123",
+      "description": "ㅁㄴㅇ",
+      "coverUrl": null
     },
     {
       "id": "4",

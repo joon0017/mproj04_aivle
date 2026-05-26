@@ -76,22 +76,62 @@ function App() {
     });
   };
 
-  const handleGenerateImage = () => {
-    if (!formData.title) {
-      alert("AI가 표지를 디자인할 수 있도록 도서 제목을 먼저 입력해주세요.");
+  const handleGenerateImage = async () => {
+  if (!formData.title) {
+    alert("AI가 표지를 디자인할 수 있도록 도서 제목을 먼저 입력해주세요.");
+    return;
+  }
+
+  if (!formData.openApiKey) {
+    alert("OpenAI API Key를 입력해주세요.");
+    return;
+  }
+
+  try {
+    setIsGenerating(true);
+
+    const prompt = `
+도서 제목: ${formData.title}
+저자: ${formData.author}
+출판사: ${formData.publisher}
+도서 설명: ${formData.description}
+
+위 정보를 바탕으로 책 표지 이미지를 만들어줘.
+텍스트는 넣지 말고, 세련된 도서 표지 느낌으로 만들어줘.
+`;
+
+    const response = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${formData.openApiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-image-1",
+        prompt: prompt,
+        size: "1024x1024",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error(data);
+      alert("이미지 생성 실패: API Key 또는 요청 내용을 확인해주세요.");
       return;
     }
 
-    setIsGenerating(true);
+    const imageBase64 = data.data[0].b64_json;
+    const imageUrl = `data:image/png;base64,${imageBase64}`;
 
-    setTimeout(() => {
-      const randomSeed = Math.floor(Math.random() * 1000);
-      const mockImageUrl = `https://picsum.photos/seed/${randomSeed}/400/600`;
-
-      setGeneratedImage(mockImageUrl);
-      setIsGenerating(false);
-    }, 1200);
-  };
+    setGeneratedImage(imageUrl);
+  } catch (error) {
+    console.error(error);
+    alert("이미지 생성 중 오류가 발생했습니다.");
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
   const handleRegisterClick = () => {
     resetForm();

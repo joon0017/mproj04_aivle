@@ -10,7 +10,10 @@
       "content": "데이터베이스 기초 개념과 SQL 활용 방법을 설명하는 입문서",
       "coverImageUrl": "",
       "createdAt": "2024-01-10",
-      "updatedAt": "2024-01-10"
+      "updatedAt": "2024-01-10",
+      "isbn": "",
+      "description": "",
+      "coverUrl": null
     },
     {
       "id": "2",

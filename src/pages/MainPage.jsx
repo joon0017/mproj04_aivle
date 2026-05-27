@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookDetailsPanel from "../components/BookDetailsPanel";
 import ShelfSection from "../components/ShelfSection";
 
 function MainPage({
   books,
+  totalBooksCount,
   holdingBooks,
   availableBooks,
   rentedBooks,
   selectedBook,
   sortType,
   onSortChange,
+  searchTerm,
+  onSearchChange,
   onRegisterClick,
   onEditClick,
   onDeleteBook,
@@ -17,10 +20,21 @@ function MainPage({
   onBookDoubleClick,
 }) {
   const [hoveredBook, setHoveredBook] = useState(null);
+  const [pendingSearchTerm, setPendingSearchTerm] = useState(searchTerm);
   const displayBook = hoveredBook || selectedBook;
   const isPreviewing = Boolean(
     hoveredBook && hoveredBook.id !== selectedBook?.id
   );
+  const hasSearchTerm = searchTerm.trim().length > 0;
+
+  useEffect(() => {
+    setPendingSearchTerm(searchTerm);
+  }, [searchTerm]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    onSearchChange(pendingSearchTerm);
+  };
 
   return (
     <div className="main-wrapper">
@@ -58,7 +72,10 @@ function MainPage({
 
       <section className="center-content">
         <div className="top-search-bar-row">
-          <div className="search-container">
+          <form
+            className="search-container"
+            onSubmit={handleSearchSubmit}
+          >
             <select
               className="search-select"
               value={sortType}
@@ -74,18 +91,26 @@ function MainPage({
               type="text"
               placeholder="도서 제목, 저자, 출판사로 검색하세요"
               className="search-input-field"
+              value={pendingSearchTerm}
+              onChange={(e) => setPendingSearchTerm(e.target.value)}
             />
 
-            <button className="search-submit-btn">검색</button>
-          </div>
+            <button type="submit" className="search-submit-btn">검색</button>
+          </form>
 
           <button onClick={onRegisterClick} className="global-add-btn">
             + 신규 도서 등록하기
           </button>
         </div>
 
-        {books.length === 0 ? (
+        {totalBooksCount === 0 ? (
           <div className="no-select">불러올 수 있는 도서 데이터가 없습니다.</div>
+        ) : books.length === 0 ? (
+          <div className="no-select">
+            {hasSearchTerm
+              ? `"${searchTerm}" 검색 결과가 없습니다.`
+              : "표시할 도서가 없습니다."}
+          </div>
         ) : (
           <div className="shelf-container">
             <ShelfSection

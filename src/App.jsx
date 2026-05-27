@@ -9,6 +9,7 @@ function App() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [modalBook, setModalBook] = useState(null);
   const [sortType, setSortType] = useState("title");
+  const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("main");
 
   const [formData, setFormData] = useState({
@@ -50,9 +51,26 @@ function App() {
     return 0;
   });
 
-  const holdingBooks = sortedBooks.slice(0, 3);
-  const availableBooks = sortedBooks.filter((book) => book.id % 2 !== 0);
-  const rentedBooks = sortedBooks.filter((book) => book.id % 2 === 0);
+  const bookMatchesSearch = (book, query) =>
+    [
+      book.title,
+      book.author,
+      book.publisher,
+      book.type,
+      book.isbn,
+      book.year,
+    ]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const searchedBooks = normalizedSearchTerm
+    ? sortedBooks.filter((book) => bookMatchesSearch(book, normalizedSearchTerm))
+    : sortedBooks;
+
+  const holdingBooks = searchedBooks.slice(0, 3);
+  const availableBooks = searchedBooks.filter((book) => book.id % 2 !== 0);
+  const rentedBooks = searchedBooks.filter((book) => book.id % 2 === 0);
 
   const resetForm = () => {
     setFormData({
@@ -292,17 +310,41 @@ function App() {
     setModalBook(book);
   };
 
+  const handleSearchChange = (nextSearchTerm) => {
+    setSearchTerm(nextSearchTerm);
+
+    const nextQuery = nextSearchTerm.trim().toLowerCase();
+    const nextSearchedBooks = nextQuery
+      ? sortedBooks.filter((book) => bookMatchesSearch(book, nextQuery))
+      : sortedBooks;
+
+    if (
+      nextSearchedBooks.length > 0 &&
+      !nextSearchedBooks.some((book) => book.id === selectedBook?.id)
+    ) {
+      setSelectedBook(nextSearchedBooks[0]);
+      return;
+    }
+
+    if (nextSearchedBooks.length === 0) {
+      setSelectedBook(null);
+    }
+  };
+
   return (
     <div className="app-container">
       {viewMode === "main" && (
         <MainPage
-          books={books}
+          books={searchedBooks}
+          totalBooksCount={books.length}
           holdingBooks={holdingBooks}
           availableBooks={availableBooks}
           rentedBooks={rentedBooks}
           selectedBook={selectedBook}
           sortType={sortType}
           onSortChange={setSortType}
+          searchTerm={searchTerm}
+          onSearchChange={handleSearchChange}
           onRegisterClick={handleRegisterClick}
           onEditClick={handleEditClick}
           onDeleteBook={handleDeleteBook}

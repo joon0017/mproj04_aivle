@@ -1,12 +1,3 @@
-const coverBgColors = [
-  "#1a4d6c",
-  "#0b2545",
-  "#226f54",
-  "#8d99ae",
-  "#d90429",
-  "#f4a261",
-];
-
 function ShelfBookItem({
   book,
   isSelected,
@@ -15,29 +6,56 @@ function ShelfBookItem({
   onMouseEnter,
   onMouseLeave,
 }) {
-  const selectBg = coverBgColors[book.id % coverBgColors.length];
+  const isRented = Number(book.id) % 2 === 0;
+
+  const fallbackColors = [
+    "#64748b",
+    "#082f49",
+    "#0f766e",
+    "#4c1d95",
+    "#ea580c",
+    "#166534",
+    "#be123c",
+    "#0f172a",
+  ];
+
+  const colorIndex = Number(book.id) % fallbackColors.length;
 
   return (
-    <button
-      type="button"
-      className={`book-shelf-card ${isSelected ? "selected-book-shelf-card" : ""}`}
+    <article
+      className={`shelf-book-item ${isSelected ? "selected" : ""}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onFocus={onMouseEnter}
-      onBlur={onMouseLeave}
-      aria-label={`${book.title} 상세보기`}
     >
-      {book.coverUrl ? (
-        <img src={book.coverUrl} alt="커버" className="real-cover-image" />
-      ) : (
-        <div className="book-cover-image" style={{ backgroundColor: selectBg }}>
-          <div className="book-cover-title">{book.title}</div>
-          <div className="book-cover-author">{book.author}</div>
-        </div>
-      )}
-    </button>
+      <div
+        className="shelf-book-cover"
+        style={
+          book.coverUrl
+            ? { backgroundImage: `url(${book.coverUrl})` }
+            : { backgroundColor: fallbackColors[colorIndex] }
+        }
+      >
+        {!book.coverUrl && (
+          <>
+            <h4>{book.title}</h4>
+            <span>{book.type || "단행본"}</span>
+          </>
+        )}
+      </div>
+
+      <div className="shelf-book-info">
+        <h3>{book.title}</h3>
+        <p>{book.author}</p>
+        <p>{book.publisher}</p>
+        <p>{book.year}년</p>
+
+        <span className={isRented ? "status-badge rented" : "status-badge available"}>
+          {isRented ? "대출 중" : "대출 가능"}
+        </span>
+      </div>
+    </article>
   );
 }
 

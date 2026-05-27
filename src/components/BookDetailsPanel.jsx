@@ -5,23 +5,31 @@ function BookDetailsPanel({
   onDeleteBook,
 }) {
   if (!selectedBook) {
-    return <div className="no-select">도서를 선택하면 상세 정보가 표시됩니다.</div>;
+    return (
+      <div className="no-select">
+        도서를 선택하면 상세 정보가 표시됩니다.
+      </div>
+    );
   }
 
-  const isRented = selectedBook.id % 2 === 0;
+  const isRented = Number(selectedBook.id) % 2 === 0;
+  const bookCode = `BR-${String(selectedBook.id).padStart(5, "0")}`;
 
   return (
     <div className="sticky-panel">
       <div className="panel-header">
         <div>
           <h3 className="section-title-right">상세 정보 및 관리</h3>
-          {/* {isPreviewing && <p className="preview-label">마우스 허버 미리보기</p>} */}
         </div>
 
         {!isPreviewing && (
           <div className="action-btn-group">
             <button onClick={onEditClick} className="edit-btn">
               수정
+            </button>
+
+            <button type="button" className="rent-btn">
+              대여
             </button>
 
             <button
@@ -41,17 +49,17 @@ function BookDetailsPanel({
           <tbody>
             <tr>
               <th>저자</th>
-              <td>{selectedBook.author}</td>
+              <td>{selectedBook.author || "정보 없음"}</td>
             </tr>
 
             <tr>
               <th>출판사</th>
-              <td>{selectedBook.publisher}</td>
+              <td>{selectedBook.publisher || "정보 없음"}</td>
             </tr>
 
             <tr>
               <th>출판년도</th>
-              <td>{selectedBook.year}년</td>
+              <td>{selectedBook.year ? `${selectedBook.year}년` : "정보 없음"}</td>
             </tr>
 
             <tr>
@@ -79,7 +87,7 @@ function BookDetailsPanel({
 
           <tbody>
             <tr>
-              <td>BR-00000{selectedBook.id}</td>
+              <td>{bookCode}</td>
               <td>제1자료실 (2층)</td>
               <td>
                 <span className={isRented ? "status-rent" : "status-ok"}>

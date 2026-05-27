@@ -6,7 +6,7 @@ function ShelfBookItem({
   onMouseEnter,
   onMouseLeave,
 }) {
-  const isRented = Number(book.id) % 2 === 0;
+  const isRented = book.isAvailable === false;
 
   const fallbackColors = [
     "#64748b",

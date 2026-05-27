@@ -21,6 +21,7 @@ function App() {
     type: "단행본",
     isbn: "",
     description: "",
+    isAvailable: true,
   });
 
   const [generatedImage, setGeneratedImage] = useState(null);
@@ -69,9 +70,8 @@ function App() {
     : sortedBooks;
 
   const holdingBooks = searchedBooks.slice(0, 3);
-  const availableBooks = searchedBooks.filter((book) => book.id % 2 !== 0);
-  const rentedBooks = searchedBooks.filter((book) => book.id % 2 === 0);
-
+  const availableBooks = searchedBooks.filter((book) => book.isAvailable === true);
+  const rentedBooks = searchedBooks.filter((book) => book.isAvailable === false);
   const resetForm = () => {
     setFormData({
       openApiKey: "",
@@ -82,6 +82,7 @@ function App() {
       type: "단행본",
       isbn: "",
       description: "",
+      isAvailable: true,
     });
 
     setGeneratedImage(null);
@@ -128,7 +129,7 @@ function App() {
         Authorization: `Bearer ${formData.openApiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-image-1",
+        model: "gpt-image-2",
         prompt: prompt,
         size: "1024x1024",
       }),
@@ -218,6 +219,7 @@ function App() {
       description: formData.description,
       createdAt: new Date().toISOString(),
       coverUrl: generatedImage,
+      isAvailable: true,
     };
 
     fetch("http://localhost:3000/books", {
@@ -331,6 +333,46 @@ function App() {
     }
   };
 
+
+
+
+  const handleToggleRent = (bookId, currentStatus) => {
+    const newStatus = !currentStatus; // true면 false로, false면 true로 뒤집기
+
+    fetch(`http://localhost:3000/books/${bookId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isAvailable: newStatus }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("상태 변경 실패");
+        return res.json();
+      })
+      .then((updatedBook) => {
+        // 화면 즉시 갱신
+        setBooks((prevBooks) =>
+          prevBooks.map((book) => (book.id === updatedBook.id ? updatedBook : book))
+        );
+        
+        // 상세 모달을 열어둔 상태라면 모달 안의 데이터도 같이 갱신
+        if (selectedBook && selectedBook.id === updatedBook.id) {
+          setSelectedBook(updatedBook);
+          setModalBook(updatedBook); 
+        }
+        
+        alert(newStatus ? "도서 반납이 완료되었습니다." : "도서 대출이 완료되었습니다.");
+      })
+      .catch((err) => {
+        console.error("처리 실패:", err);
+        alert("오류가 발생했습니다.");
+      });
+  };
+
+
+
+
+
+
   return (
     <div className="app-container">
       {viewMode === "main" && (
@@ -350,11 +392,13 @@ function App() {
           onDeleteBook={handleDeleteBook}
           onBookClick={openBookModal}
           onBookDoubleClick={openBookModalByDoubleClick}
+          onToggleRent={handleToggleRent} // 
         />
       )}
 
       {modalBook && (
-        <BookDetailModal book={modalBook} onClose={() => setModalBook(null)} />
+        <BookDetailModal book={modalBook} onClose={() => setModalBook(null)}
+        onToggleRent={handleToggleRent} />
       )}
 
       {viewMode === "register" && (

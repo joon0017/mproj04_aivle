@@ -1,5 +1,5 @@
-function BookDetailModal({ book, onClose }) {
-  const isRented = book.id % 2 === 0;
+function BookDetailModal({ book, onClose, onToggleRent }) {
+  const isRented = book.isAvailable === false;
 
   return (
     <div className="modal-overlay" onClick={onClose}>

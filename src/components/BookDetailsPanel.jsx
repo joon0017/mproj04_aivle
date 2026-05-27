@@ -3,6 +3,7 @@ function BookDetailsPanel({
   isPreviewing = false,
   onEditClick,
   onDeleteBook,
+  onToggleRent, // ✨ 1. Props로 함수 받기 추가
 }) {
   if (!selectedBook) {
     return (
@@ -12,7 +13,8 @@ function BookDetailsPanel({
     );
   }
 
-  const isRented = Number(selectedBook.id) % 2 === 0;
+  // ✨ 2. 짝수/홀수 하드코딩 제거 및 실제 DB 데이터 연동
+  const isRented = selectedBook.isAvailable === false;
   const bookCode = `BR-${String(selectedBook.id).padStart(5, "0")}`;
 
   return (
@@ -28,8 +30,13 @@ function BookDetailsPanel({
               수정
             </button>
 
-            <button type="button" className="rent-btn">
-              대여
+            {/* ✨ 3. 대여 버튼에 onClick 이벤트 추가 및 상태별 텍스트 변경 */}
+            <button 
+              type="button" 
+              className="rent-btn"
+              onClick={() => onToggleRent(selectedBook.id, selectedBook.isAvailable)}
+            >
+              {isRented ? "반납" : "대여"}
             </button>
 
             <button

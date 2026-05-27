@@ -14,6 +14,10 @@ function MainPage({
   onDeleteBook,
   onBookClick,
   onBookDoubleClick,
+  holdingBooks = [],   // ✨ 추가: 소장중인 책
+  availableBooks = [], // ✨ 추가: 대출 가능 책
+  rentedBooks = [],    // ✨ 추가: 대출 중 책
+  onToggleRent,        // ✨ 추가: 대출/반납 토글 함수
 }) {
   const recentBooks = books.slice(0, 3);
 
@@ -132,6 +136,7 @@ function MainPage({
           selectedBook={selectedBook}
           onEditClick={onEditClick}
           onDeleteBook={onDeleteBook}
+          onToggleRent={onToggleRent}
         />
       </aside>
     </div>
